@@ -41,6 +41,10 @@ class DatabaseSeeder extends Seeder
             $subject = Subject::firstOrCreate(['subject_name' => $subjectName]);
 
             return [$subjectName => $subject->id_subjectname];
+
+
+
+            
         });
 
         $johnmarkin = Student::where('first_name', 'Johnmarkin')
