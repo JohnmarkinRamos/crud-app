@@ -41,6 +41,14 @@
             @error('year_level') <div class="error">{{ $message }}</div> @enderror
         </div>
 
+        <div class="form-group">
+            <label>Subjects</label>
+            @include('students._subjects-dropdown', ['subjects' => $subjects, 'selectedSubjectIds' => old('subjects', [])])
+            <small class="dropdown-select-help">Pick at least 1 subject from the dropdown.</small>
+            @error('subjects') <div class="error">{{ $message }}</div> @enderror
+            @error('subjects.*') <div class="error">{{ $message }}</div> @enderror
+        </div>
+
         <button type="submit" class="btn btn-add">Save Student</button>
         <a href="{{ route('students.index') }}">Cancel</a>
     </form>

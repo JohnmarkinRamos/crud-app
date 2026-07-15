@@ -13,4 +13,9 @@ class Student extends Model
         'course',
         'year_level',
     ];
+
+    public function subjects()
+    {
+        return $this->belongsToMany(Subject::class, 'student_subject', 'student_id', 'subject_id');
+    }
 }

@@ -45,6 +45,7 @@ return new class extends Migration
 
             $table->index(['connection', 'queue', 'failed_at']);
         });
+        
     }
 
     /**

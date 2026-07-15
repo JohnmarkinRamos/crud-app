@@ -5,6 +5,14 @@
     <p><strong>Email:</strong> {{ $student->email }}</p>
     <p><strong>Course:</strong> {{ $student->course }}</p>
     <p><strong>Year Level:</strong> {{ $student->year_level }}</p>
+    <p>
+        <strong>Subjects:</strong>
+        @if($student->subjects->count() === 1)
+            {{ $student->subjects->first()->subject_name }}
+        @else
+            {{ $student->subjects->pluck('subject_name')->join(', ') ?: 'None' }}
+        @endif
+    </p>
 
     <a href="{{ route('students.index') }}" class="btn btn-view">Back to List</a>
     <a href="{{ route('students.edit', $student) }}" class="btn btn-edit">Edit</a>

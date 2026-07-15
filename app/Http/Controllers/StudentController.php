@@ -3,19 +3,22 @@
 namespace App\Http\Controllers;
 
 use App\Models\Student;
+use App\Models\Subject;
 use Illuminate\Http\Request;
 
 class StudentController extends Controller
 {
     public function index()
     {
-        $students = Student::latest()->paginate(10);
+        $students = Student::with('subjects')->latest()->paginate(10);
         return view('students.index', compact('students'));
     }
 
     public function create()
     {
-        return view('students.create');
+        $subjects = Subject::orderBy('subject_name')->get();
+
+        return view('students.create', compact('subjects'));
     }
 
     public function store(Request $request)
@@ -26,9 +29,19 @@ class StudentController extends Controller
             'email'      => 'required|email|unique:students,email',
             'course'     => 'required|string|max:255',
             'year_level' => 'required|integer|min:1|max:6',
+            'subjects'   => 'required|array|min:1',
+            'subjects.*' => 'integer|exists:subjects,id_subjectname',
         ]);
 
-        Student::create($validated);
+        $student = Student::create([
+            'first_name' => $validated['first_name'],
+            'last_name' => $validated['last_name'],
+            'email' => $validated['email'],
+            'course' => $validated['course'],
+            'year_level' => $validated['year_level'],
+        ]);
+
+        $student->subjects()->sync($validated['subjects']);
 
         return redirect()->route('students.index')
             ->with('success', 'Student added successfully.');
@@ -36,12 +49,17 @@ class StudentController extends Controller
 
     public function show(Student $student)
     {
+        $student->load('subjects');
+
         return view('students.show', compact('student'));
     }
 
     public function edit(Student $student)
     {
-        return view('students.edit', compact('student'));
+        $student->load('subjects');
+        $subjects = Subject::orderBy('subject_name')->get();
+
+        return view('students.edit', compact('student', 'subjects'));
     }
 
     public function update(Request $request, Student $student)
@@ -52,9 +70,19 @@ class StudentController extends Controller
             'email'      => 'required|email|unique:students,email,' . $student->id,
             'course'     => 'required|string|max:255',
             'year_level' => 'required|integer|min:1|max:6',
+            'subjects'   => 'required|array|min:1',
+            'subjects.*' => 'integer|exists:subjects,id_subjectname',
         ]);
 
-        $student->update($validated);
+        $student->update([
+            'first_name' => $validated['first_name'],
+            'last_name' => $validated['last_name'],
+            'email' => $validated['email'],
+            'course' => $validated['course'],
+            'year_level' => $validated['year_level'],
+        ]);
+
+        $student->subjects()->sync($validated['subjects']);
 
         return redirect()->route('students.index')
             ->with('success', 'Student updated successfully.');
